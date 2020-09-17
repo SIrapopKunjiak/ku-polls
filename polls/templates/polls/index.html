@@ -1,12 +1,29 @@
 {% load static %}
-
+<style>
+    .button {
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+    }
+    
+    .button1 {background-color: #4CAF50;} /* Green */
+    .button2 {background-color: #008CBA;} /* Blue */
+    </style>
 <link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}">
 {% if latest_question_list %}
     <ul>
     {% for question in latest_question_list %}
-        <li><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></li>
+        <li>{{ question.question_text }}<a href="{% url 'polls:detail' question.id %}"button class="button button1">Vote</button></a>  <a href="{% url 'polls:results' question.id %}"button class="button button2">Results</button></a></li> 
     {% endfor %}
     </ul>
 {% else %}
     <p>No polls are available.</p>
 {% endif %}
+
+
