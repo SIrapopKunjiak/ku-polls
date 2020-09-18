@@ -25,20 +25,23 @@
 </style>
 <link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}">
 {% if latest_question_list %}
-</ul>
-{% if messages %}
-<ul class="messages">
-    {% for msg in messages %}
-    <li class="{{msg.tags}}">{{ msg }}</li>
-    {% endfor %}
-</ul>
-{% endif %}
 <ul>
+    {% if messages %}
+    <ul class="messages">
+        {% for msg in messages %}
+        <b class="{{msg.tags}}">{{ msg }}</b>
+        {% endfor %}
+    </ul>
+    {% endif %}
     {% for question in latest_question_list %}
-    <li>{{ question.question_text }}<a href="{% url 'polls:detail' question.id %}" button
-            class="button button1">Vote</button></a> <a href="{% url 'polls:results' question.id %}" button
-            class="button button2">Results</button></a></li>
+    <li>{{ question.question_text }}</li>
+    {% if question.can_vote %}
+    <a href="{% url 'polls:detail' question.id %}" button class="button button1">Vote</button></a>
+    <a href="{% url 'polls:results' question.id %}" button class="button button2">Results</button></a>
+    {% else %}
+    <a href="{% url 'polls:results' question.id %}" button class="button button2">Results</button></a>
+    {% endif %}
     {% endfor %}
-{% else %}
-<p>No polls are available.</p>
-{% endif %}
+    {% else %}
+    <p>No polls are available.</p>
+    {% endif %}
