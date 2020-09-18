@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.views import generic
 from .models import Choice, Question
 from django.utils import timezone
+from django.contrib import messages
 
 class IndexView(generic.ListView):
     template_name = 'polls/index.html'
@@ -44,9 +45,10 @@ def vote(request, question_id):
             'error_message': "You didn't select a choice.",
         })
     else:
-        selected_choice.votes += 1
-        selected_choice.save()
-        # Always return an HttpResponseRedirect after successfully dealing
-        # with POST data. This prevents data from being posted twice if a
-        # user hits the Back button.
-        return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
+        if not (question.can_vote()):
+            messages.warning(request,"This polls are not allowed.")
+            return HttpResponseRedirect(reverse("polls:index"))
+        else:
+            selected_choice.votes += 1
+            selected_choice.save()
+            return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
