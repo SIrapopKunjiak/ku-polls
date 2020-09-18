@@ -1,3 +1,4 @@
+{% load static %}
 <h1>{{ question.question_text }}</h1>
 <style>
     .button {
@@ -12,13 +13,20 @@
       cursor: pointer;
     }
     
-    .button1 {background-color: #4CAF50;} /* Green */
+    .button1 {background-color: #4CAF50;} /* Green <td>{{ choice.choice_text }}</td>
+    <td>{{ choice.votes }} vote{{ choice.votes|pluralize }}</td> */
     .button2 {background-color: #008CBA;} /* Blue */
     </style>
+<link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}">
 <ul>
+    <table width="20%">
 {% for choice in question.choice_set.all %}
-    <li>{{ choice.choice_text }} -- {{ choice.votes }} vote{{ choice.votes|pluralize }}</li>
+        <tr>
+            <td>{{ choice.choice_text }}</td>
+            <td>{{ choice.votes }}</td>
+          </tr>
 {% endfor %}
+    </table>
 </ul>
 
 <a href="{% url 'polls:detail' question.id %}"button class="button button2">Vote again?</a><br>
