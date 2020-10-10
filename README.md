@@ -1,4 +1,6 @@
 # Kasetsart Polls
+[![Build Status](https://travis-ci.com/SIrapopKunjiak/ku-polls.svg?branch=master)](https://travis-ci.com/SIrapopKunjiak/ku-polls)
+[![codecov](https://codecov.io/gh/SIrapopKunjiak/ku-polls/branch/master/graph/badge.svg)](https://codecov.io/gh/SIrapopKunjiak/ku-polls)
 
 Web application for conducting online polls and surveys.
 
