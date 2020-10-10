@@ -1,3 +1,5 @@
+"""URLs for KU-Polls."""
+
 from django.urls import path
 
 from . import views

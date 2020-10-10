@@ -1,3 +1,5 @@
+"""Views for KU-Polls."""
+
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -6,7 +8,9 @@ from .models import Choice, Question
 from django.utils import timezone
 from django.contrib import messages
 
+
 class IndexView(generic.ListView):
+    """Class for index view."""
     template_name = 'polls/index.html'
     context_object_name = 'latest_question_list'
 
@@ -19,31 +23,42 @@ class IndexView(generic.ListView):
             pub_date__lte=timezone.now()
         ).order_by('-pub_date')
 
-# def index(request):
-#     questions = Question.objects.all().order_by('-pub_date')
-#     return render(request, 'polls/index.html', {'questions': questions})
 
 class DetailView(generic.DetailView):
+    """Class for detail view."""
     model = Question
     template_name = 'polls/detail.html'
+
     def get_queryset(self):
         """
         Excludes any questions that aren't published yet.
         """
         return Question.objects.filter(pub_date__lte=timezone.now())
 
-# def detail(request, pk):
-#     question = get_object_or_404(Question, pk=pk)
-#     if not question.can_vote():
-#         messages.info(request, 'Voting is not allowed!')
-#         return redirect('polls:index')
-#     else:
-#         return render(request, 'polls/detail.html', {'question': question})
-
 
 class ResultsView(generic.DetailView):
+    """Class for results view."""
     model = Question
     template_name = 'polls/results.html'
+
+
+def index(request):
+    """Index to view."""
+    latest_question_list = Question.objects.order_by('-pub_date')
+    context = {'latest_question_list': latest_question_list}
+    return render(request, 'polls/index.html', context)
+
+
+def detail(request, question_id):
+    """Details to view."""
+    question = get_object_or_404(Question, pk=question_id)
+    return render(request, 'polls/detail.html', {'question': question})
+
+
+def results(request, question_id):
+    """Results to view."""
+    question = get_object_or_404(Question, pk=question_id)
+    return render(request, 'polls/results.html', {'question': question})
 
 
 def vote(request, question_id):
@@ -58,7 +73,7 @@ def vote(request, question_id):
         })
     else:
         if not (question.can_vote()):
-            messages.warning(request,"This polls are not allowed.")
+            messages.warning(request, "This polls are not allowed.")
             return HttpResponseRedirect(reverse("polls:index"))
         else:
             selected_choice.votes += 1

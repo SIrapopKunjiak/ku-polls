@@ -1,3 +1,4 @@
+"""Tests for KU-Polls."""
 import datetime
 
 from django.test import TestCase
