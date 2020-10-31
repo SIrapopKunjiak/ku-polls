@@ -1,4 +1,4 @@
-"""Views for KU-Polls signup form."""
+"""Views for signup form."""
 
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
