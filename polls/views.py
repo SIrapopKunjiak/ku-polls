@@ -9,6 +9,8 @@ from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 import logging.config
+from django.contrib.auth import user_logged_in, user_logged_out, user_login_failed
+from django.dispatch import receiver
 
 class IndexView(generic.ListView):
     """Class for index view."""
@@ -84,3 +86,27 @@ def vote(request, question_id):
             question.vote_set.create(choice=selected_choice, user=request.user)
             messages.success(request, "Vote success.")
         return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
+
+def get_client_ip(request):
+    """Return client ip address."""
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+@receiver(user_logged_in)
+def user_logged_in_callback(sender, request, user, **kwargs):
+    """Log the detail of user and ip address when user logged in."""
+    logger.info(f'User {user.username} {get_client_ip(request)} logged in ')
+
+@receiver(user_logged_out)
+def user_logged_out_callback(sender, request, user, **kwargs):
+    """Log the detail of user and ip address when user logged out."""
+    logger.info(f'User {user.username} {get_client_ip(request)} logged out')
+
+@receiver(user_login_failed)
+def user_login_failed_callback(sender, credentials, request, **kwargs):
+    """Log the detail of user and ip address when users are failed to login."""
+    logger.warning(f'User {request.POST["username"]} {get_client_ip(request)} login failed')
