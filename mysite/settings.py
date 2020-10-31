@@ -112,7 +112,7 @@ AUTHENTICATION_BACKENDS = (
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = config('TIME_ZONE')
+TIME_ZONE = 'Asia/Bangkok'
 
 USE_I18N = True
 
