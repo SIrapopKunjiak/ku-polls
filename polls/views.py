@@ -11,6 +11,11 @@ from django.contrib.auth.decorators import login_required
 import logging.config
 from django.contrib.auth import user_logged_in, user_logged_out, user_login_failed
 from django.dispatch import receiver
+from .settings import LOGGING
+
+# For logging options
+logging.config.dictConfig(LOGGING)
+logger = logging.getLogger('polls')
 
 class IndexView(generic.ListView):
     """Class for index view."""
@@ -114,4 +119,4 @@ def user_logged_out_callback(sender, request, user, **kwargs):
 @receiver(user_login_failed)
 def user_login_failed_callback(sender, credentials, request, **kwargs):
     """Log the detail of user and ip address when users are failed to login."""
-    logger.warning(f'User {request.POST["username"]} {get_client_ip(request)} login failed')
+    logger.warning(f'User {request.POST["username"]} login failed from {get_client_ip(request)}')
