@@ -1,47 +1,44 @@
 {% load static %}
-<style>
-    .button {
-        border: none;
-        color: white;
-        padding: 15px 32px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer;
-    }
-
-    .button1 {
-        background-color: #4CAF50;
-    }
-
-    /* Green */
-    .button2 {
-        background-color: #008CBA;
-    }
-
-    /* Blue */
-</style>
 <link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}">
+{% if user.is_authenticated %}
+็Hello, {{ user.username }}
+<p>
+    <a href="{% url 'logout' %}">Logout?</a>
+</p>
+{% else %}
+Go <a href="{% url 'login'%}?next={{request.path}}">Login</a>
+{% endif %}
+
 {% if latest_question_list %}
 <ul>
+    {% for question in latest_question_list %}
+    <li>{{ question.question_text }}</li>
+    {% if question.can_vote %}
+    <form action="{% url 'polls:results' question.id %}">
+        <input type="submit" value="results" />
+    </form>
+    <form action="{% url 'polls:detail' question.id %}">
+        <input type="submit" value="vote" />
+    </form>
+    {% else %}
+    <form action="{% url 'polls:results' question.id %}">
+        <input type="submit" value="results" />
+    </form>
+    </li>
+
     {% if messages %}
     <ul class="messages">
         {% for msg in messages %}
         <b class="{{msg.tags}}">{{ msg }}</b>
         {% endfor %}
+        {% endif %}
     </ul>
     {% endif %}
-    {% for question in latest_question_list %}
-    <li>{{ question.question_text }}</li>
-    {% if question.can_vote %}
-    <a href="{% url 'polls:detail' question.id %}" button class="button button1">Vote</button></a>
-    <a href="{% url 'polls:results' question.id %}" button class="button button2">Results</button></a>
-    {% else %}
-    <a href="{% url 'polls:results' question.id %}" button class="button button2">Results</button></a>
-    {% endif %}
     {% endfor %}
-    {% else %}
-    <p>No polls are available.</p>
-    {% endif %}
+</ul>
+{% else %}
+<p>No polls are available.</p>
+{% endif %}
+
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}">

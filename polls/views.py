@@ -4,10 +4,15 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views import generic
-from .models import Choice, Question
+from .models import Choice, Question, Vote
 from django.utils import timezone
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+import logging.config
+from .settings import LOGGING
 
+logging.config.dictConfig(LOGGING)
+logger = logging.getLogger('polls')
 
 class IndexView(generic.ListView):
     """Class for index view."""
@@ -61,6 +66,7 @@ def results(request, question_id):
     return render(request, 'polls/results.html', {'question': question})
 
 
+@login_required
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     try:
@@ -74,8 +80,11 @@ def vote(request, question_id):
     else:
         if not (question.can_vote()):
             messages.warning(request, "This polls are not allowed.")
-            return HttpResponseRedirect(reverse("polls:index"))
+            elif Vote.objects.filter(user=request.user, question=question).exists():
+            current_votes = Vote.objects.get(user=request.user, question=question)
+            current_votes.choice = selected_choice
+            current_votes.save()
         else:
-            selected_choice.votes += 1
-            selected_choice.save()
+            question.vote_set.create(choice=selected_choice, user=request.user)
+            messages.success(request, "Vote success.")
             return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
