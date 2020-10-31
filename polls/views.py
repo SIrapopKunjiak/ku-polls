@@ -81,10 +81,10 @@ def vote(request, question_id):
         if not (question.can_vote()):
             messages.warning(request, "This polls are not allowed.")
         elif Vote.objects.filter(user=request.user, question=question).exists():
-        current_votes = Vote.objects.get(user=request.user, question=question)
-        current_votes.choice = selected_choice
-        current_votes.save()
+            current_votes = Vote.objects.get(user=request.user, question=question)
+            current_votes.choice = selected_choice
+            current_votes.save()
         else:
             question.vote_set.create(choice=selected_choice, user=request.user)
             messages.success(request, "Vote success.")
-            return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
+        return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
