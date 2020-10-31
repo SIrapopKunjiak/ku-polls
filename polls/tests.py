@@ -139,7 +139,7 @@ class QuestionDetailViewTests(TestCase):
         future_question = create_question(question_text='Future question.', pub=5, end=6)
         url = reverse('polls:detail', args=(future_question.id,))
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
 
     def test_past_question(self):
         """
