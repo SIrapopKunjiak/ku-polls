@@ -75,26 +75,28 @@ def results(request, question_id):
 
 @login_required
 def vote(request, question_id):
+    """Vote view."""
     question = get_object_or_404(Question, pk=question_id)
     try:
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
     except (KeyError, Choice.DoesNotExist):
-        # Redisplay the question voting form.
         return render(request, 'polls/detail.html', {
             'question': question,
-            'error_message': "You didn't select a choice.",
+            'error_message': "You didn't choose a choice yet.",
         })
     else:
         if not (question.can_vote()):
-            messages.warning(request, "This polls are not allowed.")
+            messages.warning(request, "This polls is not allowed.")
         elif Vote.objects.filter(user=request.user, question=question).exists():
-            current_votes = Vote.objects.get(user=request.user, question=question)
-            current_votes.choice = selected_choice
-            current_votes.save()
+            this_votes = Vote.objects.get(user=request.user, question=question)
+            this_votes.choice = selected_choice
+            this_votes.save()
         else:
             question.vote_set.create(choice=selected_choice, user=request.user)
-            logger.info(f'User {request.user.username} voted for question id number {question.id} from {get_client_ip(request)}')
-            messages.success(request, "Vote successful.")
+        logger.info(
+            f'User {request.user.username} voted for question id number {question.id} from {get_client_ip(request)}')
+        messages.success(request, "Vote success.")
+        request.session['choice'] = selected_choice.id
         return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
 
 def get_client_ip(request):
