@@ -55,7 +55,11 @@ def index(request):
 def detail(request, question_id):
     """Details to view."""
     question = get_object_or_404(Question, pk=question_id)
-    return render(request, 'polls/detail.html', {'question': question})
+    try:
+        previous_choice = question.vote_set.get(user=request.user).choice
+    except (KeyError, Vote.DoesNotExist):
+        return render(request, 'polls/detail.html', {'question': question})
+    return render(request, 'polls/detail.html', {'question': question, 'previous_choice': previous_choice})
 
 
 def results(request, question_id):
@@ -84,7 +88,8 @@ def vote(request, question_id):
             current_votes.save()
         else:
             question.vote_set.create(choice=selected_choice, user=request.user)
-            messages.success(request, "Vote success.")
+            logger.info(f'User {request.user.username} voted for question id number {question.id} from {get_client_ip(request)}')
+            messages.success(request, "Vote successful.")
         return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
 
 def get_client_ip(request):
