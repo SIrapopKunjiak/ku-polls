@@ -9,10 +9,6 @@ from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 import logging.config
-from .settings import LOGGING
-
-logging.config.dictConfig(LOGGING)
-logger = logging.getLogger('polls')
 
 class IndexView(generic.ListView):
     """Class for index view."""
